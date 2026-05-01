@@ -1,0 +1,96 @@
+{
+  "India": {
+    "Maharashtra": ["Marathi", "Hindi", "English"],
+    "Gujarat": ["Gujarati", "Hindi", "English"],
+    "Karnataka": ["Kannada", "English", "Hindi"],
+    "Tamil Nadu": ["Tamil", "English", "Telugu"],
+    "Delhi": ["Hindi", "English", "Punjabi"],
+    "Kerala": ["Malayalam", "English"],
+    "West Bengal": ["Bengali", "English", "Hindi"],
+    "Punjab": ["Punjabi", "Hindi", "English"],
+    "Uttar Pradesh": ["Hindi", "Urdu", "Bhojpuri"],
+    "All States": ["Hindi", "English"]
+  },
+  "United States": {
+    "California": ["English", "Spanish", "Chinese", "Tagalog"],
+    "Texas": ["English", "Spanish", "Vietnamese"],
+    "New York": ["English", "Spanish", "Chinese", "Russian"],
+    "Florida": ["English", "Spanish", "Haitian Creole"],
+    "Hawaii": ["English", "Hawaiian", "Ilocano"],
+    "All States": ["English", "Spanish"]
+  },
+  "Canada": {
+    "Quebec": ["French", "English"],
+    "Ontario": ["English", "French", "Mandarin"],
+    "British Columbia": ["English", "Punjabi", "Cantonese"],
+    "All Provinces": ["English", "French"]
+  },
+  "Spain": {
+    "Catalonia": ["Catalan", "Spanish"],
+    "Galicia": ["Galician", "Spanish"],
+    "Basque Country": ["Basque", "Spanish"],
+    "Madrid": ["Spanish", "English"],
+    "All Regions": ["Spanish"]
+  },
+  "Switzerland": {
+    "Zurich": ["Swiss German", "German", "English"],
+    "Geneva": ["French", "English"],
+    "Ticino": ["Italian", "German"],
+    "Graubünden": ["German", "Romansh", "Italian"],
+    "All Cantons": ["German", "French", "Italian"]
+  },
+  "China": {
+    "Guangdong": ["Cantonese", "Mandarin"],
+    "Beijing": ["Mandarin"],
+    "Shanghai": ["Wu Chinese (Shanghainese)", "Mandarin"],
+    "Fujian": ["Min Chinese (Hokkien)", "Mandarin"],
+    "All Provinces": ["Mandarin"]
+  },
+  "Nigeria": {
+    "Lagos": ["English", "Yoruba", "Pidgin"],
+    "Kano": ["Hausa", "English"],
+    "Enugu": ["Igbo", "English"],
+    "All States": ["English", "Hausa", "Yoruba", "Igbo"]
+  },
+  "South Africa": {
+    "Gauteng": ["English", "Zulu", "Afrikaans"],
+    "Western Cape": ["Afrikaans", "English", "Xhosa"],
+    "KwaZulu-Natal": ["Zulu", "English"],
+    "All Provinces": ["English", "Zulu", "Xhosa", "Afrikaans"]
+  },
+  "United Kingdom": {
+    "Wales": ["Welsh", "English"],
+    "Scotland": ["Scottish Gaelic", "Scots", "English"],
+    "England": ["English", "Polish", "Punjabi"],
+    "Northern Ireland": ["English", "Irish"],
+    "All Regions": ["English"]
+  },
+  "Russia": {
+    "Tatarstan": ["Tatar", "Russian"],
+    "Chechnya": ["Chechen", "Russian"],
+    "Sakha Republic": ["Yakut", "Russian"],
+    "Moscow": ["Russian", "English"],
+    "All Regions": ["Russian"]
+  },
+  "France": {
+    "Brittany": ["Breton", "French"],
+    "Corsica": ["Corsican", "French"],
+    "Occitanie": ["Occitan", "French"],
+    "Île-de-France": ["French", "English", "Arabic"],
+    "All Regions": ["French"]
+  },
+  "Germany": {
+    "Bavaria": ["Bavarian", "German", "English"],
+    "Berlin": ["German", "English", "Turkish"],
+    "All States": ["German", "English"]
+  },
+  "Japan": {
+    "Okinawa": ["Okinawan", "Japanese"],
+    "Hokkaido": ["Ainu", "Japanese"],
+    "Tokyo": ["Japanese", "English"],
+    "All Prefectures": ["Japanese"]
+  },
+  "Global": {
+    "Universal": ["English", "Esperanto", "Spanish", "French", "Mandarin", "Arabic", "Russian", "Portuguese"]
+  }
+}
