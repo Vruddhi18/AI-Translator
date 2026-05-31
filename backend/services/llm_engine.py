@@ -1,68 +1,80 @@
-from langchain_community.llms import Ollama
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-from langchain_community.embeddings import HuggingFaceEmbeddings
+import os
 import chromadb
+from chromadb.utils import embedding_functions
+from langchain_groq import ChatGroq
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.prompts import PromptTemplate
+
 
 class TranslationEngine:
-    def __init__(self, model_name="llama3.1"):
-        self.llm = Ollama(model=model_name)
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    def __init__(self):
+        groq_api_key = os.environ.get("GROQ_API_KEY")
+        if not groq_api_key:
+            raise ValueError("GROQ_API_KEY environment variable is not set.")
+
+        self.llm = ChatGroq(
+            model="llama-3.1-8b-instant",  # free, open-source, fast
+            api_key=groq_api_key,
+            temperature=0.3,
+        )
+
+        # ChromaDB's built-in embeddings — no sentence_transformers needed
         self.chroma_client = chromadb.Client()
-        self.vectorstores = {}
+        self.embedding_fn = embedding_functions.DefaultEmbeddingFunction()
+        self.collections = {}
 
     def index_document(self, session_id: str, text: str):
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = text_splitter.split_text(text)
-        
+
         collection_name = f"sess_{session_id.replace('-', '')}"
-        
-        vectorstore = Chroma.from_texts(
-            texts=chunks,
-            embedding=self.embeddings,
-            client=self.chroma_client,
-            collection_name=collection_name
+
+        collection = self.chroma_client.get_or_create_collection(
+            name=collection_name,
+            embedding_function=self.embedding_fn
         )
-        self.vectorstores[session_id] = vectorstore
+        collection.add(
+            documents=chunks,
+            ids=[f"{session_id}_{i}" for i in range(len(chunks))]
+        )
+        self.collections[session_id] = collection
         return True
 
+    def _invoke(self, prompt: str) -> str:
+        from langchain_core.messages import HumanMessage
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return response.content.strip()
+
     def translate(self, text: str, target_language: str) -> str:
-        # If text is too long, we might need to chunk it, but for simplicity let's rely on LLM context length first
-        prompt = f"Translate the following text into {target_language}. Respond ONLY with the translation, nothing else.\n\nText to translate:\n{text[:10000]}..."
-        response = self.llm.invoke(prompt)
-        return response.strip()
+        prompt = (
+            f"Translate the following text into {target_language}. "
+            f"Respond ONLY with the translation, nothing else.\n\n"
+            f"Text to translate:\n{text[:10000]}"
+        )
+        return self._invoke(prompt)
 
     def summarize(self, text: str) -> str:
-        prompt = f"Provide a comprehensive summary of the following text and generate key notes.\n\nText:\n{text[:10000]}..."
-        response = self.llm.invoke(prompt)
-        return response.strip()
+        prompt = (
+            f"Provide a comprehensive summary of the following text and generate key notes.\n\n"
+            f"Text:\n{text[:10000]}"
+        )
+        return self._invoke(prompt)
 
     def chat(self, session_id: str, query: str, target_language: str = "English") -> str:
-        if session_id not in self.vectorstores:
-            return "No document indexed for this session."
-            
-        vectorstore = self.vectorstores[session_id]
-        
-        enhanced_query = f"{query}\n\n[Instruction: Please respond to the above question entirely in {target_language}.]"
-        
-        prompt_template = """Use the following pieces of context to answer the question at the end. 
+        if session_id not in self.collections:
+            return "No document indexed for this session. Please upload a file first."
 
-        Context:
-        {context}
+        collection = self.collections[session_id]
 
-        Question: {question}
-        Answer:"""
-        PROMPT = PromptTemplate(
-            template=prompt_template, input_variables=["context", "question"]
+        # Retrieve relevant chunks
+        results = collection.query(query_texts=[query], n_results=4)
+        context = "\n\n".join(results["documents"][0]) if results["documents"] else ""
+
+        prompt = (
+            f"Use the following context to answer the question. "
+            f"Respond entirely in {target_language}.\n\n"
+            f"Context:\n{context}\n\n"
+            f"Question: {query}\n\n"
+            f"Answer:"
         )
-        
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=vectorstore.as_retriever(),
-            chain_type_kwargs={"prompt": PROMPT}
-        )
-        
-        return qa_chain.invoke(enhanced_query)["result"]
+        return self._invoke(prompt)
